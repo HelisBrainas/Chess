@@ -130,7 +130,13 @@ class Knight(Piece):
 class Pawn(Piece):
     def __init__(self, color):
         super().__init__(color, 'pawn')
-        self.just_moved_two = False
+        self.__just_moved_two = False
+
+    def set_just_moved_two(self, value: bool):
+        self.__just_moved_two = value
+
+    def get_just_moved_two(self):
+        return self.__just_moved_two
 
     def valid_moves(self, board, x, y):
         direction = -1 if self.color == 'w' else 1
@@ -149,7 +155,7 @@ class Pawn(Piece):
                 # En passant
                 ep_row = 3 if self.color == 'w' else 4
                 if y == ep_row and isinstance(board[y][nx], Pawn) and board[y][nx].color != self.color:
-                    if board[y][nx].just_moved_two:
+                    if board[y][nx].get_just_moved_two():
                         moves.append((nx, ny))
         return moves
 
@@ -194,7 +200,7 @@ class Board:
         for row in self.board:
             for p in row:
                 if isinstance(p, Pawn):
-                    p.just_moved_two = False
+                    p.set_just_moved_two(False)
 
         if isinstance(piece, King) and abs(x2 - x1) == 2:
             row = y1
@@ -206,7 +212,7 @@ class Board:
                 self.board[row][0] = None
 
         if isinstance(piece, Pawn) and abs(y2 - y1) == 2:
-            piece.just_moved_two = True
+            piece.set_just_moved_two( True)
 
         if isinstance(piece, Pawn) and x2 != x1 and self.board[y2][x2] is None:
             self.board[y1][x2] = None
